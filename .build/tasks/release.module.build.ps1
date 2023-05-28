@@ -100,7 +100,7 @@ param
 )
 
 # Synopsis: Create ReleaseNotes from changelog and update the Changelog for release
-task Create_changelog_release_output {
+Task Create_changelog_release_output {
     # Get the vales for task variables, see https://github.com/gaelcolas/Sampler#task-variables.
     . Set-SamplerTaskVariable
 
@@ -109,8 +109,7 @@ task Create_changelog_release_output {
     "`tChangeLogOutputPath   = '$ChangeLogOutputPath'"
 
     # Parse the Changelog and extract unreleased
-    try
-    {
+    try {
         Import-Module ChangelogManagement -ErrorAction Stop
 
         # Update the source changelog file
@@ -130,36 +129,26 @@ task Create_changelog_release_output {
             module manifest release notes has a hard size limit when publishing
             to PowerShell Gallery.
         #>
-        if ($changeLogDataForLatestRelease.RawData.Length -gt 10000)
-        {
+        if ($changeLogDataForLatestRelease.RawData.Length -gt 10000) {
             $moduleManifestReleaseNotes = $changeLogDataForLatestRelease.RawData.Substring(0, 10000)
-        }
-        else
-        {
+        } else {
             $moduleManifestReleaseNotes = $changeLogDataForLatestRelease.RawData
         }
 
         # Create a ReleaseNotes from the Updated changelog
         ConvertFrom-Changelog -Path $ChangeLogOutputPath -Format Release -NoHeader -OutputPath $ReleaseNotesPath -ErrorAction Stop
-    }
-    catch
-    {
+    } catch {
         Write-Build Red "Error creating the Changelog Output and/or ReleaseNotes. $($_.Exception.Message)"
     }
 
-    if (-not ($ReleaseNotes = (Get-Content -raw $ReleaseNotesPath -ErrorAction SilentlyContinue)))
-    {
-        $ReleaseNotes = Get-Content -raw $ChangeLogOutputPath -ErrorAction SilentlyContinue
+    if (-not ($ReleaseNotes = (Get-Content -Raw $ReleaseNotesPath -ErrorAction SilentlyContinue))) {
+        $ReleaseNotes = Get-Content -Raw $ChangeLogOutputPath -ErrorAction SilentlyContinue
     }
 
-    if ($ReleaseNotes -and -not [string]::IsNullOrEmpty($builtModuleManifest) -and (Test-Path -Path $builtModuleManifest -ErrorAction SilentlyContinue))
-    {
-        try
-        {
+    if ($ReleaseNotes -and -not [string]::IsNullOrEmpty($builtModuleManifest) -and (Test-Path -Path $builtModuleManifest -ErrorAction SilentlyContinue)) {
+        try {
             Import-Module Configuration -ErrorAction Stop
-        }
-        catch
-        {
+        } catch {
             Write-Build Red "Issue importing Configuration module. $($_.Exception.Message)"
             return
         }
@@ -168,9 +157,8 @@ task Create_changelog_release_output {
         # No need to test the manifest again here, because the pipeline tested all manifests via the where-clause already
 
         # Uncomment release notes (the default in Plaster/New-ModuleManifest)
-        $ManifestString = Get-Content -raw $builtModuleManifest
-        if ( $ManifestString -match '#\sReleaseNotes\s?=')
-        {
+        $ManifestString = Get-Content -Raw $builtModuleManifest
+        if ( $ManifestString -match '#\sReleaseNotes\s?=') {
             $ManifestString = $ManifestString -replace '#\sReleaseNotes\s?=', '  ReleaseNotes ='
             $Utf8NoBomEncoding = [System.Text.UTF8Encoding]::new($False)
             [System.IO.File]::WriteAllLines($BuiltModuleManifest, $ManifestString, $Utf8NoBomEncoding)
@@ -184,22 +172,15 @@ task Create_changelog_release_output {
         }
 
         Update-Manifest @UpdateReleaseNotesParams
-    }
-    else
-    {
-        if ([string]::IsNullOrEmpty($ReleaseNotes))
-        {
-            Write-Build -Color Red "No Release notes found to insert."
+    } else {
+        if ([string]::IsNullOrEmpty($ReleaseNotes)) {
+            Write-Build -Color Red 'No Release notes found to insert.'
         }
 
-        if ([string]::IsNullOrEmpty($builtModuleManifest) -or -not (Test-Path -Path $builtModuleManifest))
-        {
-            if ([string]::IsNullOrEmpty($ProjectName))
-            {
-                Write-Build -Color DarkGray "No PowerShell module name found. We assume you are not building a PowerShell Module."
-            }
-            else
-            {
+        if ([string]::IsNullOrEmpty($builtModuleManifest) -or -not (Test-Path -Path $builtModuleManifest)) {
+            if ([string]::IsNullOrEmpty($ProjectName)) {
+                Write-Build -Color DarkGray 'No PowerShell module name found. We assume you are not building a PowerShell Module.'
+            } else {
                 Write-Build -Color Red "No valid manifest found for project '$ProjectName'. Cannot update the Release Notes."
             }
         }
@@ -207,11 +188,11 @@ task Create_changelog_release_output {
 }
 
 # Synopsis: Publish Nuget package to a gallery.
-task publish_nupkg_to_gallery -if ($GalleryApiToken -and (Get-Command -Name 'nuget' -ErrorAction 'SilentlyContinue')) {
+Task publish_nupkg_to_gallery -if ($GalleryApiToken -and (Get-Command -Name 'nuget' -ErrorAction 'SilentlyContinue')) {
     # Get the vales for task variables, see https://github.com/gaelcolas/Sampler#task-variables.
     . Set-SamplerTaskVariable
 
-    Import-Module -Name 'ModuleBuilder' -ErrorAction 'Stop'
+    Import-Module -name 'ModuleBuilder' -ErrorAction 'Stop'
 
     $ChangeLogOutputPath = Join-Path -Path $OutputDirectory -ChildPath 'CHANGELOG.md'
 
@@ -221,22 +202,21 @@ task publish_nupkg_to_gallery -if ($GalleryApiToken -and (Get-Command -Name 'nug
     $PackageToRelease = Get-ChildItem -Path (Join-Path -Path $OutputDirectory -ChildPath "$ProjectName.$ModuleVersion.nupkg")
 
     Write-Build DarkGray "About to release $PackageToRelease"
-    if (-not $SkipPublish)
-    {
+    if (-not $SkipPublish) {
         $response = &nuget push $PackageToRelease -source $nugetPublishSource -ApiKey $GalleryApiToken
     }
 
-    Write-Build Green "Response = " + $response
+    Write-Build Green 'Response = ' + $response
 }
 
 # Synopsis: Packaging the module by Publishing to output folder (incl dependencies)
-task package_module_nupkg {
+Task package_module_nupkg {
     # Get the vales for task variables, see https://github.com/gaelcolas/Sampler#task-variables.
     . Set-SamplerTaskVariable
 
     #region Set output/ as PSRepository
     # Force registering the output repository mapping to the Project's output path
-    $null = Unregister-PSRepository -Name output -ErrorAction SilentlyContinue
+    $null = Unregister-PSRepository -name output -ErrorAction SilentlyContinue
 
     # Parse PublishModuleWhatIf to be boolean
     $null = [bool]::TryParse($PublishModuleWhatIf, [ref]$script:PublishModuleWhatIf)
@@ -251,24 +231,21 @@ task package_module_nupkg {
     $null = Register-PSRepository @RepositoryParams
 
     # Cleaning up existing packaged module
-    if ($ModuleToRemove = Get-ChildItem (Join-Path $OutputDirectory "$ProjectName.*.nupkg"))
-    {
+    if ($ModuleToRemove = Get-ChildItem (Join-Path $OutputDirectory "$ProjectName.*.nupkg")) {
         Write-Build DarkGray "  Remove existing $ProjectName package"
-        Remove-Item -force -Path $ModuleToRemove -ErrorAction Stop
+        Remove-Item -Force -Path $ModuleToRemove -ErrorAction Stop
     }
     #endregion
 
-    if (-not $BuiltModuleManifest)
-    {
+    if (-not $BuiltModuleManifest) {
         throw "No valid manifest found for project $ProjectName."
     }
 
     Write-Build DarkGray "  Built module's Manifest found at $BuiltModuleManifest"
 
     # Uncomment release notes (the default in Plaster/New-ModuleManifest)
-    $ManifestString = Get-Content -raw $BuiltModuleManifest
-    if ( $ManifestString -match '#\sReleaseNotes\s?=')
-    {
+    $ManifestString = Get-Content -Raw $BuiltModuleManifest
+    if ( $ManifestString -match '#\sReleaseNotes\s?=') {
         $ManifestString = $ManifestString -replace '#\sReleaseNotes\s?=', '  ReleaseNotes ='
         $Utf8NoBomEncoding = [System.Text.UTF8Encoding]::new($False)
         [System.IO.File]::WriteAllLines($BuiltModuleManifest, $ManifestString, $Utf8NoBomEncoding)
@@ -278,20 +255,16 @@ task package_module_nupkg {
     $ModuleInfo = Get-SamplerModuleInfo -ModuleManifestPath $builtModuleManifest
 
     # Publish dependencies (from environment) so we can publish the built module
-    foreach ($module in $ModuleInfo.RequiredModules)
-    {
-        if (!([Microsoft.PowerShell.Commands.ModuleSpecification]$module | Find-Module -repository output -ErrorAction SilentlyContinue))
-        {
+    foreach ($module in $ModuleInfo.RequiredModules) {
+        if (!([Microsoft.PowerShell.Commands.ModuleSpecification]$module | Find-Module -Repository output -ErrorAction SilentlyContinue)) {
             # Replace the module by first (path & version) resolved in PSModulePath
             $module = Get-Module -ListAvailable -FullyQualifiedName $module | Select-Object -First 1
-            if ($Prerelease = $module.PrivateData.PSData.Prerelease)
-            {
-                $Prerelease = "-" + $Prerelease
+            if ($Prerelease = $module.PrivateData.PSData.Prerelease) {
+                $Prerelease = '-' + $Prerelease
             }
-            Write-Build Yellow ("  Packaging Required Module {0} v{1}{2}" -f $Module.Name, $Module.Version.ToString(), $Prerelease)
+            Write-Build Yellow ('  Packaging Required Module {0} v{1}{2}' -f $Module.Name, $Module.Version.ToString(), $Prerelease)
 
-            if ($PublishModuleWhatIf)
-            {
+            if ($PublishModuleWhatIf) {
                 $PublishModuleParams['WhatIf'] = $True
             }
 
@@ -301,44 +274,42 @@ task package_module_nupkg {
     }
 
     $PublishModuleParams = @{
-        Path            = $BuiltModuleBase
-        Repository      = 'output'
-        ErrorAction     = 'Stop'
-        Force           = $true
+        Path        = $BuiltModuleBase
+        Repository  = 'output'
+        ErrorAction = 'Stop'
+        Force       = $true
     }
 
-    if ($PublishModuleWhatIf)
-    {
+    if ($PublishModuleWhatIf) {
         $PublishModuleParams['WhatIf'] = $True
     }
 
-    Publish-Module @PublishModuleParams
+    nuget pack "$ProjectName.nuspec" -OutputDirectory $OutputDirectory
+
 
     Write-Build Green "`n  Packaged $ProjectName NuGet package `n"
-    Write-Build DarkGray "  Cleaning up"
+    Write-Build DarkGray '  Cleaning up'
 
-    $null = Unregister-PSRepository -Name output -ErrorAction SilentlyContinue
+    $null = Unregister-PSRepository -name output -ErrorAction SilentlyContinue
 }
 
 # Synopsis: Publish a built PowerShell module to a gallery.
-task publish_module_to_gallery -if ($GalleryApiToken -and (Get-Command -Name 'Publish-Module' -ErrorAction 'SilentlyContinue')) {
+Task publish_module_to_gallery -if ($GalleryApiToken -and (Get-Command -Name 'Publish-Module' -ErrorAction 'SilentlyContinue')) {
     # Get the vales for task variables, see https://github.com/gaelcolas/Sampler#task-variables.
     . Set-SamplerTaskVariable
 
-    Import-Module -Name 'ModuleBuilder' -ErrorAction 'Stop'
+    Import-Module -name 'ModuleBuilder' -ErrorAction 'Stop'
 
     # Parse PublishModuleWhatIf to be boolean
     $null = [bool]::TryParse($PublishModuleWhatIf, [ref]$script:PublishModuleWhatIf)
 
-    if (-not $BuiltModuleManifest)
-    {
+    if (-not $BuiltModuleManifest) {
         throw "No valid manifest found for project $ProjectName."
     }
 
     # Uncomment release notes (the default in Plaster/New-ModuleManifest)
     $ManifestString = Get-Content -Raw $BuiltModuleManifest
-    if ( $ManifestString -match '#\sReleaseNotes\s?=')
-    {
+    if ( $ManifestString -match '#\sReleaseNotes\s?=') {
         $ManifestString = $ManifestString -replace '#\sReleaseNotes\s?=', '  ReleaseNotes ='
         $Utf8NoBomEncoding = [System.Text.UTF8Encoding]::new($False)
         [System.IO.File]::WriteAllLines($BuiltModuleManifest, $ManifestString, $Utf8NoBomEncoding)
@@ -347,22 +318,20 @@ task publish_module_to_gallery -if ($GalleryApiToken -and (Get-Command -Name 'Pu
     Write-Build DarkGray "`nAbout to release '$BuiltModuleBase'."
 
     $PublishModuleParams = @{
-        Path            = $BuiltModuleBase
-        NuGetApiKey     = $GalleryApiToken
-        Repository      = $PSModuleFeed
-        ErrorAction     = 'Stop'
+        Path        = $BuiltModuleBase
+        NuGetApiKey = $GalleryApiToken
+        Repository  = $PSModuleFeed
+        ErrorAction = 'Stop'
     }
 
-    if ($PublishModuleWhatIf)
-    {
+    if ($PublishModuleWhatIf) {
         $PublishModuleParams['WhatIf'] = $true
     }
 
-    if (!$SkipPublish)
-    {
+    if (!$SkipPublish) {
         # Release notes will be used from module manifest
         Publish-Module @PublishModuleParams
     }
 
-    Write-Build Green "Package Published to PSGallery."
+    Write-Build Green 'Package Published to PSGallery.'
 }

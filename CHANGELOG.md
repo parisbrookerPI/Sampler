@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Change
+
+- Changed Nuget Pack task to work with ADO PS repo
+
 ## [0.116.5] - 2023-04-19
 
 - Fix Azure Pipeline bug to resolve errors and delays during the build process. Shallow fetch has been disabled to ensure complete repository cloning. Fixes [#424](https://github.com/gaelcolas/Sampler/issues/424)
@@ -49,7 +53,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
       The template will ask if Azure Pipelines should be used, default is No.
     - `UseVSCode` - This parameter adds project files that helps when using
       Visual Studio Code as the project code editor. The template will ask
-      if  Visual Studio Code should be used, default is No.
+      if Visual Studio Code should be used, default is No.
   - The file `build.yaml` will only contain tasks from `Sampler.GitHubTasks`
     if template parameter `UseGitHub` is set to true (the answer to the
     template question is Yes).
@@ -112,7 +116,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Script `Set-SamplerTaskVariable.ps1`
   - Added debug output of PSModulePath
 
-
 ## [0.116.1] - 2023-01-09
 
 ### Fixed
@@ -131,7 +134,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Task `Build_ModuleOutput_ModuleBuilder`
-  - Proper support for DSC composite resources (*.schema.psm1).
+  - Proper support for DSC composite resources (\*.schema.psm1).
 - Added task `Set_PSModulePath`.
   - Added function `Set-SamplerPSModulePath`.
   - Added tests for the task and function.
@@ -309,14 +312,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - GitVersion.yml now uses the correct chosen default branch.
   - Codecov.yml now uses the correct chosen default branch.
 - Fixed GuestConfiguration compilation to work with GuestConfiguration module version 4.0.0-preview0002.
-- Set the default type to AuditAndSet, but supporting override by creating a '$GCPackageName.psd1' file along with the config. 
+- Set the default type to AuditAndSet, but supporting override by creating a '\$GCPackageName.psd1' file along with the config.
 
 ## [0.112.0] - 2021-09-23
 
 ### Removed
 
 - Removed `PesterOutputFormat` parameter in `DeployAll.PSDeploy.build.ps1`
- fix ([issue #292](https://github.com/gaelcolas/Sampler/issues/292)).
+  fix ([issue #292](https://github.com/gaelcolas/Sampler/issues/292)).
 - Removed the template `newDscCommunity` which is replaced by the template
   `dsccommunity`.
 
@@ -365,7 +368,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Removed `$BuiltModuleSubdirectory` definition in the `begin` bloc of `build.ps1`
- template ([issue #299](https://github.com/gaelcolas/Sampler/issues/299)).
+  template ([issue #299](https://github.com/gaelcolas/Sampler/issues/299)).
 - Replaced `$ModudulePath` with `$BuiltModuleBase` for the `release.module.build.ps1` task file.
 
 ## [0.111.5] - 2021-06-25
@@ -373,11 +376,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Added support of `BuiltSubDirectoryDirectory` in build configuration files
- ([issue #299](https://github.com/gaelcolas/Sampler/issues/299))
+  ([issue #299](https://github.com/gaelcolas/Sampler/issues/299))
 
 ### Fixed
 
-- The task `Invoke_Pester_Tests_v5` no longer fails when using Pester 
+- The task `Invoke_Pester_Tests_v5` no longer fails when using Pester
   v5.3.0-alpha5 ([issue #307](https://github.com/gaelcolas/Sampler/issues/307)).
 - The task `Convert_Pester_Coverage` no longer fails when using a preview
   version of Pester ([issue #301](https://github.com/gaelcolas/Sampler/issues/301)).
@@ -473,7 +476,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `Invoke_Pester_Tests_v4` (previously `Invoke_Pester_Test`), and `Invoke_Pester_Tests_v5`.
   - Task `Invoke_Pester_Tests_v4` will not run if Pester 5 is used in the pipeline.
   - Task `Invoke_Pester_Tests_v5` will not run if Pester 4 is used in the pipeline.
-- The task _Convert\_Pester\_Coverage_ was changed to support converting
+- The task _Convert_Pester_Coverage_ was changed to support converting
   Pester 5 code coverage.
 - The function `Get-CodeCoverageThreshold` was changed to support Pester 5
   advanced build configuration.
@@ -491,7 +494,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Now unit tests properly test the function in the built module, not the
   ones that the pipeline dot-sources into session to be able to dogfooding
   itself.
-- Fix so that _Convert\_Pester\_Coverage_ correctly replaces build version
+- Fix so that _Convert_Pester_Coverage_ correctly replaces build version
   with source folder in JaCoCo file.
 
 ## [0.110.1] - 2021-04-08
@@ -530,11 +533,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed codecov.yml to parse version number in paths correctly.
 - Fix uploading to Azure Code Coverage.
 - _Merge_CodeCoverage_Files_
-  - Fixed so the file that is outputted is in UTF-8 (without BOM) to support 
+  - Fixed so the file that is outputted is in UTF-8 (without BOM) to support
     Codecov.io.
   - The task now only searches for the file pattern inside the `./output/testResults`
     folder.
-  - The merge process is not attempted if `CodeCoverageThreshold` is set to 
+  - The merge process is not attempted if `CodeCoverageThreshold` is set to
     `0`.
   - Updated so that build.yaml now have a key `CodeCoverage` which have to
     settings `CodeCoverageMergedOutputFile` and `CodeCoverageFilePattern`.
@@ -581,7 +584,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Made Convert-SamplerHashtableToString public function.
 - Refactored a lot of Path resolution into Sampler public function for consitency and re-usability.
 - Updated the Tasks to use those Sampler functions.
-- Updated Get-BuiltModuleVersion to support $BuiltModuleSubdirectory as per #239.
+- Updated Get-BuiltModuleVersion to support \$BuiltModuleSubdirectory as per #239.
 
 ### Added
 
@@ -596,7 +599,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- Fixes #222: Adding *.dll binary to gitattributes.
+- Fixes #222: Adding \*.dll binary to gitattributes.
 - Fixes eol for file types .sh .svg .sh .mof
 - Fixes #225 by asking the question or assuming the default is `main` in most cases.
 - Readded the `Create_ChangeLog_GitHub_PR` task to the publish workflow and template.
@@ -605,7 +608,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Extracted the Common functions to be within the main Sampler module to enable re-usability.
-- Updated this project's `build.ps1` to load the Private/Public *.ps1 so it can build itselves without impacting Sampler templates.
+- Updated this project's `build.ps1` to load the Private/Public \*.ps1 so it can build itselves without impacting Sampler templates.
 - Added empty functions' Unit test files (for subsequent PR when writing moving to Pester 5).
 - Added Comment-based help for the extracted functions.
 - Dropped the CodeCoverage Threshold of the project to reflect the newly discovered code (`Common.Functions.psm1` wasn't counted for code coverage).
@@ -615,6 +618,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Removed the GitHub functions to publish them in the `Sampler.GitHubTasks` module.
 
 ## [0.109.4] - 2021-03-06
+
 ### Added
 
 - Added the build_guestconfiguration_packages task to create GuestConfig packages using the GuestConfiguration module.
@@ -634,7 +638,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   so that repositories that move over to Pester 5 can future-proof the file
   `azure-pipelines.yml` (for example when splitting tests over several jobs).
   The parameter `PesterScript` is deprecated and will be removed when
-  Pester 4 support is removed some time in the future. Change scripts to 
+  Pester 4 support is removed some time in the future. Change scripts to
   `PesterPath` when migrating to Pester 5 tests.
 
 ## [0.109.2] - 2021-01-13
@@ -643,7 +647,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - The Deploy tasks `publish_nupkg_to_gallery` and `publish_module_to_gallery`
   are now made mutually exclusive. For each deploy pipeline you must choose
-  to use either one. 
+  to use either one.
   - `publish_nupkg_to_gallery` is using `nuget` to publish to the gallery.
   - `publish_module_to_gallery` is using the cmdlet `Publish-Module` to
     publish to the gallery.
@@ -659,7 +663,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Update the Readme.md to fix a few typos.
 - Fix wrong resource name is added in module manifest property DscResourcesToExport
-([issue #220](https://github.com/gaelcolas/Sampler/issues/220))
+  ([issue #220](https://github.com/gaelcolas/Sampler/issues/220))
 
 ## [0.109.0] - 2020-11-24
 
@@ -667,8 +671,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Updating all azure-pipeline.yaml to change Build Artifacts to Pipeline Artifacts ([issue #159](https://github.com/gaelcolas/Sampler/issues/159)).
 - Update plasterManifest.xml call by New-SampleModule :
-  - Add section modify to replace "FunctionsToExport = '*'" by "FunctionsToExport = ''" in new module manifest ([issue #67](https://github.com/gaelcolas/Sampler/issues/67)).
-  - Add section modify to add "Prerelease = ''" in "PSData" block  in new module manifest ([issue #69](https://github.com/gaelcolas/Sampler/issues/69)). 
+  - Add section modify to replace "FunctionsToExport = '\*'" by "FunctionsToExport = ''" in new module manifest ([issue #67](https://github.com/gaelcolas/Sampler/issues/67)).
+  - Add section modify to add "Prerelease = ''" in "PSData" block in new module manifest ([issue #69](https://github.com/gaelcolas/Sampler/issues/69)).
 - Changing ClassResource.
   - Add generic content in the class.
   - Add pester tests.
@@ -692,7 +696,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- Fixed Test-ModuleManifest ([issue #208](https://github.com/gaelcolas/Sampler/issues/208)) 
+- Fixed Test-ModuleManifest ([issue #208](https://github.com/gaelcolas/Sampler/issues/208))
   in tasks.
 
 ## [0.108.0] - 2020-09-14
@@ -752,7 +756,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- Fixed #192 where the `Build-Module` command from module builder returns a rooted path (sometimes). 
+- Fixed #192 where the `Build-Module` command from module builder returns a rooted path (sometimes).
 
 ## [0.107.0] - 2020-09-07
 
@@ -777,14 +781,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Added Templates for:
-    - DSC Composite
-    - Class-based DSC Resource with reasons
-    - MOF based DSC Resource and tests
-    - Private Function and tests
-    - Public Function and tests
-    - Public function calling a Private function and tests
-    - Classes and tests
-    - Enum
+  - DSC Composite
+  - Class-based DSC Resource with reasons
+  - MOF based DSC Resource and tests
+  - Private Function and tests
+  - Public Function and tests
+  - Public function calling a Private function and tests
+  - Classes and tests
+  - Enum
 - Added integration tests for the Plaster templates.
 - Added support to use an alternate name for the trunk branch in
   `New-Release.GitHub.build.ps1` ([issue #182](https://github.com/gaelcolas/Sampler/issues/182)).
@@ -881,7 +885,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Update the repository to always use the latest version of the module
   `ModuleBuilder`.
-  
+
 ### Fixed
 
 - Now the prerelease is cleaned so that it does not contain any dashes by
@@ -950,7 +954,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   not specified via the `-BuildConfig` parameter.
 - Updated the PesterScript parameter to allow the specification of hastables,
   to enable specifying parameters to Pester.
-  
+
 ### Added
 
 - Add conceptual build step for DSC resources [issue #122](https://github.com/gaelcolas/Sampler/issues/122).
@@ -974,21 +978,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Removed Azure-Pipelines.yml on simple module type.
 - Ensuring Pester version above 4.0 is used and loaded.
 - build.yaml, RequiredModules.psd1 and Resolve-Dependency.psd1 are now templated
-assets with conditional content.
+  assets with conditional content.
 - HQRM tests to run only when using the dsccommunity module type.
 - Updated simple module to not contain sample scripts & tests.
 - supports setting CustomRepo to pull dependencies from a private gallery
- other than PSGallery.
+  other than PSGallery.
 - Update the plaster template to replace 'synedgy' with 'dsccommunity' if
   the module type is 'dsccommunity'.
-  
+
 ## [0.99.3] - 2020-01-21
 
 ### Changed
 
 - The deploy step is no longer run if the Azure DevOps organization URL
   does not contain 'synedgy'.
-  
+
 ## [0.99.2] - 2020-01-16
 
 ### Added
@@ -1118,7 +1122,7 @@ assets with conditional content.
 
 ### Changed
 
-- Changed the Tags trigger to include "v*" but still exclude "*-*"
+- Changed the Tags trigger to include "v*" but still exclude "*-\*"
 
 ## [v0.91.6] - 2019-10-11
 

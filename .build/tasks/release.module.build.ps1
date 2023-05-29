@@ -188,11 +188,11 @@ Task Create_changelog_release_output {
 }
 
 # Synopsis: Publish Nuget package to a gallery.
-Task publish_nupkg_to_gallery -if ($GalleryApiToken -and (Get-Command -Name 'nuget' -ErrorAction 'SilentlyContinue')) {
+Task publish_nupkg_to_gallery -if ($GalleryApiToken -and (Get-Command -name 'nuget' -ErrorAction 'SilentlyContinue')) {
     # Get the vales for task variables, see https://github.com/gaelcolas/Sampler#task-variables.
     . Set-SamplerTaskVariable
 
-    Import-Module -name 'ModuleBuilder' -ErrorAction 'Stop'
+    Import-Module -Name 'ModuleBuilder' -ErrorAction 'Stop'
 
     $ChangeLogOutputPath = Join-Path -Path $OutputDirectory -ChildPath 'CHANGELOG.md'
 
@@ -216,7 +216,7 @@ Task package_module_nupkg {
 
     #region Set output/ as PSRepository
     # Force registering the output repository mapping to the Project's output path
-    $null = Unregister-PSRepository -name output -ErrorAction SilentlyContinue
+    $null = Unregister-PSRepository -Name output -ErrorAction SilentlyContinue
 
     # Parse PublishModuleWhatIf to be boolean
     $null = [bool]::TryParse($PublishModuleWhatIf, [ref]$script:PublishModuleWhatIf)
@@ -284,21 +284,30 @@ Task package_module_nupkg {
         $PublishModuleParams['WhatIf'] = $True
     }
 
+    nuget spec $ProjectName
+
+    $xml = [xml](Get-Content "$ProjectName.nuspec")
+    $node = $xml.SelectSingleNode('//dependencies')
+    $node.ParentNode.RemoveChild($node)
+    $node = $xml.SelectSingleNode('//tags')
+    $node.ParentNode.RemoveChild($node)
+    $xml.Save("$pwd/$ProjectName.nuspec")
+
     nuget pack "$ProjectName.nuspec" -OutputDirectory $OutputDirectory
 
 
     Write-Build Green "`n  Packaged $ProjectName NuGet package `n"
     Write-Build DarkGray '  Cleaning up'
 
-    $null = Unregister-PSRepository -name output -ErrorAction SilentlyContinue
+    $null = Unregister-PSRepository -Name output -ErrorAction SilentlyContinue
 }
 
 # Synopsis: Publish a built PowerShell module to a gallery.
-Task publish_module_to_gallery -if ($GalleryApiToken -and (Get-Command -Name 'Publish-Module' -ErrorAction 'SilentlyContinue')) {
+Task publish_module_to_gallery -if ($GalleryApiToken -and (Get-Command -name 'Publish-Module' -ErrorAction 'SilentlyContinue')) {
     # Get the vales for task variables, see https://github.com/gaelcolas/Sampler#task-variables.
     . Set-SamplerTaskVariable
 
-    Import-Module -name 'ModuleBuilder' -ErrorAction 'Stop'
+    Import-Module -Name 'ModuleBuilder' -ErrorAction 'Stop'
 
     # Parse PublishModuleWhatIf to be boolean
     $null = [bool]::TryParse($PublishModuleWhatIf, [ref]$script:PublishModuleWhatIf)

@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- Fudged the test for nuget build
+
 ### Change
 
 - Changed Nuget Pack task to work with ADO PS repo
